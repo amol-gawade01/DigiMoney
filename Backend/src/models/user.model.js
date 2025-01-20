@@ -22,6 +22,9 @@ const userSchema = new Schema(
         password:{
             type:String,
             required:[true,"Password is correct"]
+        },
+        refreshToken:{
+            type:String
         }
     },{timestamps:true}
 
