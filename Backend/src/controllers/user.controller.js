@@ -24,13 +24,13 @@ const generateRefreshAndAccessToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  if ([username, email, password].some((field) => field?.trim() === "")) {
+  const { userName,lastName, email, password } = req.body;
+  if ([userName,lastName, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(401, "Some fields are empty");
   }
 
   const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
+    $or: [{ userName }, { email }],
   });
 
   if (existedUser) {
@@ -38,7 +38,8 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.create({
-    username: username.toLowerCase(),
+    userName: userName.toLowerCase(),
+    lastName,
     email,
     password,
   });
@@ -57,13 +58,13 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { userName, password } = req.body;
 
-  if ([username, password].some((f) => f?.trim() === "")) {
+  if ([userName, password].some((f) => f?.trim() === "")) {
     throw new ApiError(401, "Fields should not be empty");
   }
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ userName });
   if (!user) {
     throw new ApiError(401, "user does not exist");
   }
@@ -119,9 +120,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { userName, password } = req.body;
 
-  if (!(username || password)) {
+  if (!(userName || lastName || password)) {
     throw new ApiError(401, "Fields should not be empty");
   }
 
@@ -129,7 +130,8 @@ const updateUser = asyncHandler(async (req, res) => {
     req.user?._id,
     {
       $set: {
-        username,
+        userName,
+        lastName,
         password,
       },
     },
@@ -141,4 +143,38 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user updated successfully"));
 });
 
-export { registerUser, loginUser, logoutUser,updateUser };
+const filterUser  = asyncHandler(async (req,res) => {
+  const filter = req.query.filter;
+  if (!filter) {
+    throw new ApiError(401,"require a name to search")
+  }
+
+  const users = await User.find({
+    $or:[
+      {
+        username:{$regex:`^${filter}`}
+      },
+      {
+        lastName:{$regex:`^${filter}`}
+      }
+    ]
+  })
+
+  if (!users) {
+    return res.status(201).json(
+      new ApiResponse(200,{},"User not found ")
+    )
+  }
+
+  return res.status(201)
+  .json(new ApiResponse(
+    200,
+    users,
+    "Users filtered successfully"
+  ))
+
+  
+
+})
+
+export { registerUser, loginUser, logoutUser,updateUser,filterUser };
