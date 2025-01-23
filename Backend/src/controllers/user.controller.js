@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
+import { Account } from "../models/account.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -24,8 +25,10 @@ const generateRefreshAndAccessToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { userName,lastName, email, password } = req.body;
-  if ([userName,lastName, email, password].some((field) => field?.trim() === "")) {
+  const { userName, lastName, email, password } = req.body;
+  if (
+    [userName, lastName, email, password].some((field) => field?.trim() === "")
+  ) {
     throw new ApiError(401, "Some fields are empty");
   }
 
@@ -47,6 +50,11 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(500, "Error while creating user");
   }
+
+  await Account.create({
+    userId: user._id,
+    balance: 1 + Math.floor(Math.random() * 10000),
+  });
 
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -143,38 +151,40 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user updated successfully"));
 });
 
-const filterUser  = asyncHandler(async (req,res) => {
-  const filter = req.query.filter;
+const filterUser = asyncHandler(async (req, res) => {
+  const {filter,page ,limit } = req.query;
+  const pageLimit = parseInt(limit) || 10;
+  const pageNumber = parseInt(page) || 1;
   if (!filter) {
-    throw new ApiError(401,"require a name to search")
+    throw new ApiError(401, "require a name to search");
   }
 
-  const users = await User.find({
-    $or:[
-      {
-        username:{$regex:`^${filter}`}
+  const users = await User.aggregate([
+    {
+      $match: {
+        $or: [
+          { userName: { $regex: filter } },
+          { fullName: { $regex: filter } },
+        ],
       },
-      {
-        lastName:{$regex:`^${filter}`}
-      }
-    ]
-  })
-
-  if (!users) {
-    return res.status(201).json(
-      new ApiResponse(200,{},"User not found ")
-    )
+    },
+    {
+      $skip:  (pageNumber - 1 )*pageLimit
+    },{
+      $limit:pageLimit
+    }
+  ]);
+ 
+  if (users.length === 0) {
+    return res
+      .status(404)
+      .json(new ApiResponse(404, {}, "No users found matching the filter."));
   }
 
-  return res.status(201)
-  .json(new ApiResponse(
-    200,
-    users,
-    "Users filtered successfully"
-  ))
 
-  
+  return res
+    .status(201)
+    .json(new ApiResponse(200, users, "Users filtered successfully"));
+});
 
-})
-
-export { registerUser, loginUser, logoutUser,updateUser,filterUser };
+export { registerUser, loginUser, logoutUser, updateUser, filterUser };
