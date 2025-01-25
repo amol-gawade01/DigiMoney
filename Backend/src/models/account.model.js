@@ -16,4 +16,4 @@ const accountSchema = new Schema({
 })
 
 
-export const balance = mongoose.model("Account",accountSchema);
+export const Account = mongoose.model("Account",accountSchema);

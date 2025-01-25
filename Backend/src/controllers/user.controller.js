@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+
 import { User } from "../models/user.model.js";
 import { Account } from "../models/account.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from "jsonwebtoken";
+
 
 const generateRefreshAndAccessToken = async (userId) => {
   try {
@@ -33,11 +33,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const existedUser = await User.findOne({
-    $or: [{ userName }, { email }],
+    $or: [{ userName }, { email },{lastName}],
   });
 
   if (existedUser) {
-    throw new ApiError(409, "user with name or email alrady exist");
+    throw new ApiError(401, "user with name or email alrady exist");
   }
 
   const user = await User.create({
@@ -77,7 +77,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "user does not exist");
   }
 
-  const checkPassword = await user.isPassswordCorrect(password);
+  const checkPassword = await user.isPasswordCorrect(password);
 
   if (!checkPassword) {
     throw new ApiError(401, "Password is invalid");
@@ -99,7 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .status(201)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, { loggedInUser, accessToken }, refreshToken));
+    .json(new ApiResponse(200, { loggedInUser, accessToken,refreshToken },"User Login successfully"));
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -128,7 +128,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { userName, password } = req.body;
+  const { userName, password,lastName } = req.body;
 
   if (!(userName || lastName || password)) {
     throw new ApiError(401, "Fields should not be empty");
@@ -164,7 +164,7 @@ const filterUser = asyncHandler(async (req, res) => {
       $match: {
         $or: [
           { userName: { $regex: filter } },
-          { fullName: { $regex: filter } },
+          { lastName: { $regex: filter } },
         ],
       },
     },

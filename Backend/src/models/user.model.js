@@ -4,7 +4,15 @@ import jwt from "jsonwebtoken"
 
 const userSchema = new Schema(
     {
-        username:{
+        userName:{
+            type:String,
+            required:true,
+            unique:true,
+            lowercase:true,
+            trim:true,
+            index:true
+        },
+        lastName:{
             type:String,
             required:true,
             unique:true,
@@ -41,11 +49,12 @@ userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password,this.password)
 }
 
-userSchema.metrhods.generateAccessToken =  function(){
+userSchema.methods.generateAccessToken =  function(){
     return jwt.sign({
         _id:this._id,
         email:this.email,
-        username:this.username
+        userName:this.userName,
+        lastName:this.lastName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -53,11 +62,12 @@ userSchema.metrhods.generateAccessToken =  function(){
     })
 } 
 
-userSchema.metrhods.generateRefreshToken =  function(){
+userSchema.methods.generateRefreshToken =  function(){
     return jwt.sign({
         _id:this._id,
         email:this.email,
-        username:this.username
+        userName:this.userName,
+        lastName:this.lastName,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
