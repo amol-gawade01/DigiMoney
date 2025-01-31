@@ -1,42 +1,72 @@
-#root {
-  max-width: 1280px;
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+
+body {
+  @apply bg-white text-black; /* Light mode */
+}
+
+body.dark {
+  @apply bg-black text-white; /* Dark mode */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+  .toggle-container {
+    text-align: center;
+    display: table;
+    width: 100%;
+}
+
+.switch {
+  display: inline-block;
+  position: relative;
+  width: 60px;
+  height: 34px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: black;
+  transition: 0.4s;
+  border-radius: 34px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.slider:before {
+  content: "";
+  height: 26px;
+  width: 26px;
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.45);
+  left: 4px;
+  bottom: 4px;
+  transition: 0.4s;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+input:checked + .slider {
+  background-color: white;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+input:checked + .slider:before {
+  transform: translateX(26px);
 }

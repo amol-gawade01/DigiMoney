@@ -4,13 +4,37 @@ import { useForm } from "react-hook-form";
 import { InputButton, Button } from "./index.js";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./index.js";
+import axios from "axios"
+
 
 function Signup() {
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
 
-  const onSignup = async (data) => {};
+  const onSignup = async (data) => { 
+    setError("");
+    try {
+      const sendDataToBackend = await axios.post(
+          "http://localhost:8000/api/v1/users/register",
+          {
+              userName: data.name,
+              lastName: data.lastname,
+              email: data.email,
+              password: data.password
+          },
+          {
+              withCredentials: true  // Include cookies & authentication headers
+          }
+      );
+      if (sendDataToBackend) {
+        navigate("/login")
+      }
+  } catch (error) {
+      setError(error.message);
+  }
+  
+  };
   return (
     <div className="flex items-center justify-center lg:w-full w-[90%] m-auto lg:m-0  lg:mt-10 selct-none">
       <div

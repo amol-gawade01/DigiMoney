@@ -1,11 +1,18 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../store/authSlice";
+import axios from "axios";
 
 function LogOut() {
   const dispatch = useDispatch();
 
-  const logoutHandler = () => {};
+  const logoutHandler = () => {
+    axios.post("http://localhost:8000/api/v1/users/logout",{},{
+      withCredentials: true 
+    })
+    .then(()=> dispatch(logout()))
+    
+  };
 
   return (
     <button

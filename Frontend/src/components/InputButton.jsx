@@ -13,7 +13,7 @@ function InputButton(
         }
         <input 
         type={type}
-        className={`${className} dark:bg-inherit dark:text-white px-3 py-2  bg-white text-black outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full placeholder-gray-500`}
+        className={`${className} dark:bg-black  dark:focus:bg-black dark:text-white px-3 py-2  bg-inherit text-black outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full placeholder-gray-500`}
         {...props}
         ref={ref}
         id={id}

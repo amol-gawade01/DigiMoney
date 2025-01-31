@@ -8,6 +8,8 @@ import Dashboard from "./Dashboard";
 import Header from "./Header/Header"
 import Logo from "./Logo";
 import Container from "./Container"
+import Balance from "./Balance";
+import Users from "./Users";
 
 export {
     AuthLayout,
@@ -20,5 +22,6 @@ export {
     Header,
     Logo,
     Container,
-
+    Balance,
+    Users,
 }

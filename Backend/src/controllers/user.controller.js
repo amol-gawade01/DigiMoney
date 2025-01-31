@@ -92,7 +92,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    seure: true,
+    secure: true,
   };
 
   return res
@@ -187,4 +187,55 @@ const filterUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, users, "Users filtered successfully"));
 });
 
-export { registerUser, loginUser, logoutUser, updateUser, filterUser };
+const getCurrentUser = asyncHandler(async(req,res) =>{
+  const {userName} = req.user
+  console.log("username is ",userName)
+  if (userName === "") {
+    throw new ApiError(422,"field should not be empty")
+  }
+  
+  const getUser = await User.aggregate([
+    {
+      $match:{
+        userName:userName
+      }
+    },{
+      $lookup:{
+      from:"accounts",
+      localField:"_id",
+      foreignField:"userId",
+      as:"userInfo",
+      pipeline:[
+        {
+          $project:{
+            _id:0,
+            balance:1
+          }
+        }
+      ]
+      }
+    },
+    {
+      $project:{
+        userName:1,
+        lastName:1,
+        email:1,
+        balance: { $arrayElemAt: ["$userInfo", 0] }
+      }
+    },
+  ])
+
+  console.log(getUser)
+
+  if (!getUser || getUser.length === 0) {
+    throw new ApiError(404, "User not found"); 
+  }
+  
+
+  return res.status(200).json(
+    new ApiResponse(200,getUser[0],"User fetch successfully")
+  )
+
+})
+
+export { registerUser, loginUser, logoutUser, updateUser, filterUser,getCurrentUser };

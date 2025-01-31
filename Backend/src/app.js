@@ -4,12 +4,13 @@ import cookieParser from 'cookie-parser'
 
 const app = express();
 
-app.use(cors(
-    {
-        origin:process.env.CORS_ORIGIN,
-        credentials:true,
-    }
-))  
+
+app.use(cors({
+    origin: "http://localhost:5173",  // Allow frontend URL
+    credentials: true,  // Allow cookies and authentication headers
+    methods: ["GET", "POST", "PUT", "DELETE"],  // Allow these HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+}));
 
 app.use(express.json(
     {
@@ -18,6 +19,8 @@ app.use(express.json(
 ))
 
 app.use(cookieParser())
+app.use(express.urlencoded())
+app.use(express.static("public"))
 
 
 import userRouter from "./routes/user.routes.js"

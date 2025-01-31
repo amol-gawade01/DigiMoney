@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, InputButton, Logo } from "./index.js";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+import {login as authLogin} from "../store/authSlice.js"
+
 
 function Login() {
   const navigate = useNavigate();
@@ -12,8 +15,26 @@ function Login() {
 
   const onLogin = async (data) => {
     setError("");
+    try {
+      const sendDataToBackend = await axios.post('http://localhost:8000/api/v1/users/login',{userName:data.name,password:data.password},{
+        withCredentials: true 
+      });
+      
+      if (sendDataToBackend) {
+      const userData =   await axios.get(`http://localhost:8000/api/v1/users/getuser`,{
+        withCredentials: true 
+      })
+      console.log("This is the data",userData.data)
+      if(userData){
+       dispatch(authLogin(userData.data.data))
+      }
+        navigate("/")
+      }
+    } catch (error) {
+      setError(error.message)
+    }
   };
-
+   
   return (
     <div className="flex items-center justify-center lg:w-full w-[90%] m-auto lg:m-0  lg:mt-20">
       <div
@@ -39,19 +60,14 @@ function Login() {
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
         <form onSubmit={handleSubmit(onLogin)} className="mt-8">
           <div className="space-y-5">
-            <InputButton
-              label="Email: "
-              placeholder="Enter your email"
-              type="email"
-              {...register("email", {
+          <InputButton
+              label="Username: "
+              placeholder="Enter your user name"
+              {...register("name", {
                 required: true,
-                validate: {
-                  matchPatern: (value) =>
-                    /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                    "Email address must be a valid address",
-                },
               })}
             />
+
             <InputButton
               label="Password: "
               type="password"

@@ -6,10 +6,11 @@ import Logo from '../Logo';
 import LogOut from './LogOut';
 import { Link } from 'react-router-dom';
 import {Container} from '../../components/index.js';
+import { changeTheme } from '../../store/themeSlice.js';
 
 function Header() {
     
-    const authStatus = useSelector((state) => state.auth.status)
+    const authStatus = useSelector((store) => store.auth.status)
     const theme = useSelector((store) => store.theme.theme);
     const [colortheme, setColortheme] = useState(false);
     const navigate = useNavigate();
@@ -40,7 +41,7 @@ function Header() {
     };
    
   return (
-    <header className="select-none ">
+    <header className="select-none overflow-x-hidden">
       <Container>
         <nav className="flex items-center justify-between p-4">
           {/* Logo */}
