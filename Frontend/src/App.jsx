@@ -11,25 +11,29 @@ function App() {
 
    const [loading,setLoading] = useState(true);
    const theme = useSelector((store) => store.theme.theme)
+   const authStatus = useSelector((store) => store.auth.status)
    const dispatch = useDispatch()
    
    
-   
-   useEffect(() => {
-    axios.get(`http://localhost:8000/api/v1/users/getuser`,{
-      withCredentials: true 
-    })
-    .then((userData) =>{
-      if(userData){
-        dispatch(login(userData.data))
-      }else{
-        dispatch(logout())
+    
+  
+  
+  useEffect(() => {
+    if (authStatus) {
+    
+        axios.get(`http://localhost:8000/api/v1/users/getuser`,{
+          withCredentials: true 
+        })
+        .then((userData) =>{
+          if(userData){
+            dispatch(login(userData.data))
+          }else{
+            dispatch(logout())
+          }
+          
+        })
       }
-    })
-
-    .finally(() => setLoading(false))
-
-     
+      setLoading(false)
    }, [])
    
    useEffect(() => {

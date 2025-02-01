@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import axios from "axios"
+import {useSelector} from "react-redux"
 
 function Balance() {
 
   const [balance,setBalance] = useState(0)
+  const authStatus = useSelector((store) => store.auth.status)
 
   const fetchBalance = async () => {
     const balanceData =  await axios.get("http://localhost:8000/api/v1/account/balance",{ withCredentials: true})
@@ -15,7 +17,9 @@ function Balance() {
 
   useEffect(() => {
   
-  fetchBalance()
+    if (authStatus) {
+      fetchBalance()   
+    }
     
   },[])
   return (
