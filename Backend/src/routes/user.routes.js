@@ -17,6 +17,6 @@ router.route('/update').patch(verifyJWT,updateUser)
 router.route('/filter').get(verifyJWT,filterUser)
 router.route('/getuser').get(verifyJWT,getCurrentUser)
 router.route('/logout').post(verifyJWT,logoutUser)
-router.route('/checkuser').get(verifyJWT)
+
 
 export default router;

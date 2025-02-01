@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from 'cookie-parser'
-
+import {ApiError} from "./utils/ApiError.js"
 const app = express();
 
 
@@ -19,18 +19,29 @@ app.use(express.json(
 ))
 
 app.use(cookieParser())
-app.use(express.urlencoded())
-app.use(express.static("public"))
+app.use(express.urlencoded({ extended: true }))
+
+
 
 
 import userRouter from "./routes/user.routes.js"
 import accountRouter from './routes/account.routes.js'
 
-
-app.use('/api/v1/users',userRouter);    
-app.use('/api/v1/account',accountRouter); 
-
-
-
+  
+  app.use('/api/v1/users',userRouter);    
+  app.use('/api/v1/account',accountRouter); 
+  
+  
+  app.use(express.static("public"))
+  
+  app.use((err, req, res, next) => {
+    console.error("Error:", err.stack);
+      if (err instanceof ApiError) {
+          console.log("we found error ")
+        return res.status(err.statusCode).json({ message: err.message });
+      }
+    
+      res.status(500).json({ message: "Internal Server Error" });
+    });
 
 export {app};

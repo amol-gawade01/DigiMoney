@@ -24,12 +24,12 @@ const generateRefreshAndAccessToken = async (userId) => {
   }
 };
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res,next) => {
   const { userName, lastName, email, password } = req.body;
   if (
     [userName, lastName, email, password].some((field) => field?.trim() === "")
   ) {
-    throw new ApiError(401, "Some fields are empty");
+    return next( new ApiError(401, "Some fields are empty"));
   }
 
   const existedUser = await User.findOne({
@@ -37,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (existedUser) {
-    throw new ApiError(401, "user with name or email alrady exist");
+    return next(new ApiError(401, "user with name or email alrady exist"))
   }
 
   const user = await User.create({
@@ -48,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    throw new ApiError(500, "Error while creating user");
+    return next (new ApiError(500, "Error while creating user"))
   }
 
   await Account.create({
@@ -65,22 +65,22 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered successfully"));
 });
 
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res,next) => {
   const { userName, password } = req.body;
 
   if ([userName, password].some((f) => f?.trim() === "")) {
-    throw new ApiError(401, "Fields should not be empty");
+    return next(new ApiError(400, "Username and password are required"));
   }
 
   const user = await User.findOne({ userName });
   if (!user) {
-    throw new ApiError(401, "user does not exist");
+    return next(new ApiError(401, "User does not exist"));
   }
 
   const checkPassword = await user.isPasswordCorrect(password);
 
   if (!checkPassword) {
-    throw new ApiError(401, "Password is invalid");
+    return next(new ApiError(401, "Invalid password"));
   }
 
   const { refreshToken, accessToken } = await generateRefreshAndAccessToken(
@@ -102,7 +102,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { loggedInUser, accessToken,refreshToken },"User Login successfully"));
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res,next) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -127,11 +127,11 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
-const updateUser = asyncHandler(async (req, res) => {
+const updateUser = asyncHandler(async (req, res,next) => {
   const { userName, password,lastName } = req.body;
 
   if (!(userName || lastName || password)) {
-    throw new ApiError(401, "Fields should not be empty");
+    return next(new ApiError(401, "Fields should not be empty"))
   }
 
   const updatedUser = await User.findByIdAndUpdate(
@@ -151,7 +151,7 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user updated successfully"));
 });
 
-const filterUser = asyncHandler(async (req, res) => {
+const filterUser = asyncHandler(async (req, res,next) => {
   const {filter,page ,limit } = req.query;
   const pageLimit = parseInt(limit) || 10;
   const pageNumber = parseInt(page) || 1;
@@ -187,11 +187,11 @@ const filterUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, users, "Users filtered successfully"));
 });
 
-const getCurrentUser = asyncHandler(async(req,res) =>{
+const getCurrentUser = asyncHandler(async(req,res,next) =>{
   const {userName} = req.user
   console.log("username is ",userName)
   if (userName === "") {
-    throw new ApiError(422,"field should not be empty")
+    return next( new ApiError(422,"field should not be empty"))
   }
   
   const getUser = await User.aggregate([
@@ -228,7 +228,7 @@ const getCurrentUser = asyncHandler(async(req,res) =>{
   console.log(getUser)
 
   if (!getUser || getUser.length === 0) {
-    throw new ApiError(404, "User not found"); 
+    return next(new ApiError(404, "User not found")) 
   }
   
 
