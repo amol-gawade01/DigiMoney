@@ -10,6 +10,7 @@ import SignUpPage from './pages/SignUpPage.jsx'
 import SendMoneyPage from './pages/SendMoneyPage.jsx'
 import store from "./store/store.js"
 import { Provider } from "react-redux";
+import Home from "./components/Home.jsx"
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
     children:[
       {
         path:"/",
+        element:<Home/>
+      },
+      {
+        path:"/dashboard",
         element:<AuthLayout authentication>
           <DashboardPage/>
         </AuthLayout>

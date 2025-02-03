@@ -18,7 +18,9 @@ function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const navItems = [
-        {name:"Dashboard",url:"/",active:authStatus},
+      
+        {name:"Home",url:"/",active:authStatus},
+        {name:"Dashboard",url:"/dashboard",active:authStatus},
         {name:"Login",url:"/login",active:!authStatus},
         {name:"Sign Up",url:"/signup",active:!authStatus},
         {name:"Send Money",url:"/send",active:authStatus},

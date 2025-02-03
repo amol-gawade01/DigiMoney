@@ -10,6 +10,7 @@ import Logo from "./Logo";
 import Container from "./Container"
 import Balance from "./Balance";
 import Users from "./Users";
+import Home from "./Home"
 
 export {
     AuthLayout,
@@ -24,4 +25,5 @@ export {
     Container,
     Balance,
     Users,
+    Home,
 }

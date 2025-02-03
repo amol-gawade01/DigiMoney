@@ -152,7 +152,7 @@ const updateUser = asyncHandler(async (req, res,next) => {
 });
 
 const filterUser = asyncHandler(async (req, res,next) => {
-  const {filter,page ,limit } = req.query;
+  const {filter,page ,limit } = req.body;
   const pageLimit = parseInt(limit) || 10;
   const pageNumber = parseInt(page) || 1;
   if (!filter) {
@@ -237,5 +237,7 @@ const getCurrentUser = asyncHandler(async(req,res,next) =>{
   )
 
 })
+
+
 
 export { registerUser, loginUser, logoutUser, updateUser, filterUser,getCurrentUser };

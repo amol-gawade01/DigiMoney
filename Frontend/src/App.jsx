@@ -5,6 +5,7 @@ import './App.css'
 import axios from "axios"
 import { Header } from './components/index.js';
 import { Outlet } from 'react-router-dom';
+import Cookies from "js-cookie"
 
 
 function App() {
@@ -18,23 +19,25 @@ function App() {
     
   
   
-  useEffect(() => {
-    if (authStatus) {
+   useEffect(() => {
     
-        axios.get(`http://localhost:8000/api/v1/users/getuser`,{
-          withCredentials: true 
-        })
-        .then((userData) =>{
-          if(userData){
-            dispatch(login(userData.data))
-          }else{
-            dispatch(logout())
-          }
-          
-        })
-      }
-      setLoading(false)
-   }, [])
+    if (!authStatus) {
+      axios.get(`http://localhost:8000/api/v1/users/getuser`, {
+        withCredentials: true 
+      })
+      .then((userData) => {
+        if (userData) {
+          dispatch(login(userData.data));
+        } else {
+          dispatch(logout());
+        }
+        setLoading(false); 
+      })
+      .catch(() => setLoading(false)); 
+    } else {
+      setLoading(false); // No cookie, stop loading
+    }
+  }, []);
    
    useEffect(() => {
     document.body.className = "" // Set the class based on theme
