@@ -10,7 +10,7 @@ function Users({ users}) {
        { users?.length > 0  && users.map((u) => (
          
          
-         <div className="flex flex-row justify-between border-b  border-gray-300 pb-2 mb-2">
+         <div key={u._id} className="flex flex-row justify-between border-b  border-gray-300 pb-2 mb-2">
           <div className="dark:text-white font-semibold justify-self-center mt-6">
           <h3>{u.userName}</h3>
         </div>

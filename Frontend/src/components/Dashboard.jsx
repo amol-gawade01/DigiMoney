@@ -10,18 +10,23 @@ function Dashboard() {
 
  const  searchUser = async() => {
   setError(null)
-  searchUser(null)
+ 
   
  try {
+  if (user === "") {
+    setError("Give a user name to search")
+    return;
+  }
   const filteredUsers =  await axios.post("http://localhost:8000/api/v1/users/filter",{
      filter:user,
      page:1,
      limit:10
    },{withCredentials:true})
    
-   if(filteredUsers.length > 0 || filteredUsers){
-     setSearchusers(filteredUsers.data.data)
-   }
+   if (filteredUsers.data.data.length > 0) { 
+    setSearchusers(filteredUsers.data.data);
+  }
+  
  } catch (error) {
   console.log("This is error",error.response.data.data.message)
   setError(error.response.data.message)
@@ -31,7 +36,7 @@ function Dashboard() {
  
   useEffect(() =>{
      setError("")
-  },[setSearchusers])
+  },[searchUsers])
 
 
   return (
@@ -47,6 +52,11 @@ function Dashboard() {
           placeholder="Search user"
           onChange={(e) => {
             setUser(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              searchUser()
+            }
           }}
         />
         <Button
