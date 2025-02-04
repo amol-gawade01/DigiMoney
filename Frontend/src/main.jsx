@@ -14,40 +14,49 @@ import Home from "./components/Home.jsx"
 
 const router = createBrowserRouter([
   {
-    path:"/",
-    element:<App/>,
-    children:[
+    path: "/",
+    element: <App />,
+    children: [
       {
-        path:"/",
-        element:<Home/>
+        path: "/",
+        element: <Home />
       },
       {
-        path:"/dashboard",
-        element:<AuthLayout authentication>
-          <DashboardPage/>
-        </AuthLayout>
+        path: "/dashboard",
+        element: (
+          <AuthLayout authentication={true}>
+            <DashboardPage />
+          </AuthLayout>
+        )
       },
       {
-        path:"/login",
-        element:<AuthLayout authentication={false}>
-          <LoginPage/>
-        </AuthLayout>
+        path: "/login",
+        element: (
+          <AuthLayout authentication={false}>
+            <LoginPage />
+          </AuthLayout>
+        )
       },
       {
-        path:"/signup",
-        element:<AuthLayout authentication={false}>
-        <SignUpPage/>
-      </AuthLayout>
+        path: "/signup",
+        element: (
+          <AuthLayout authentication={false}>
+            <SignUpPage />
+          </AuthLayout>
+        )
       },
       {
-        path:"/send",
-        element:<AuthLayout authentication>
-          <SendMoneyPage/>
-        </AuthLayout>
+        path: "/send/:id/:name",
+        element: (
+          <AuthLayout authentication={true}>
+            <SendMoneyPage />
+          </AuthLayout>
+        )
       }
     ]
   }
-])
+]);
+
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Balance, Button, InputButton } from './index.js';
 import { Users } from './index.js';
 import axios from "axios"
+import { useSelector } from 'react-redux';
 
 function Dashboard() {
   const [user,setUser] = useState("")
   const [searchUsers,setSearchusers] = useState(null)
   const [error,setError] = useState(null)
+  const userData = useSelector((store) => store.auth.user)
 
  const  searchUser = async() => {
   setError(null)
@@ -17,12 +19,16 @@ function Dashboard() {
     setError("Give a user name to search")
     return;
   }
-  const filteredUsers =  await axios.post("http://localhost:8000/api/v1/users/filter",{
-     filter:user,
-     page:1,
-     limit:10
-   },{withCredentials:true})
    
+  if (user === userData.userName) {
+    setError("You cant pay to yourself");
+    return;
+  }
+
+  const filteredUsers = await axios.get(`http://localhost:8000/api/v1/users/find?filter=${user}&page=1&limit=10`, { withCredentials: true })
+
+
+   console.log(filteredUsers)
    if (filteredUsers.data.data.length > 0) { 
     setSearchusers(filteredUsers.data.data);
   }

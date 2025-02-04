@@ -1,10 +1,12 @@
 import React from "react";
 import { Button } from "./index.js";
+import { useNavigate } from "react-router-dom";
 
 function Users({ users}) {
   console.log(
     "This are users",users
   )
+  const navigate = useNavigate()
   return (
     <div className=" w-full h-full mt-6 lg:mt-12 overflow-x-hidden  ">
        { users?.length > 0  && users.map((u) => (
@@ -15,7 +17,10 @@ function Users({ users}) {
           <h3>{u.userName}</h3>
         </div>
         <div>
-          <Button className="w-full rounded-2xl text-white dark:bg-white dark:text-black font-semibold border-b ">
+          <Button onClick={() => {
+         navigate(`/send/${u._id}/${u.userName}`);
+
+          }} className="w-full rounded-2xl text-white dark:bg-white dark:text-black font-semibold border-b ">
             Send Money
           </Button>
         </div>

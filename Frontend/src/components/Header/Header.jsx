@@ -23,7 +23,7 @@ function Header() {
         {name:"Dashboard",url:"/dashboard",active:authStatus},
         {name:"Login",url:"/login",active:!authStatus},
         {name:"Sign Up",url:"/signup",active:!authStatus},
-        {name:"Send Money",url:"/send",active:authStatus},
+        
     ]
    
     
