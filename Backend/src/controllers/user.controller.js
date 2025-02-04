@@ -152,7 +152,9 @@ const updateUser = asyncHandler(async (req, res,next) => {
 });
 
 const filterUser = asyncHandler(async (req, res,next) => {
-  const {filter,page ,limit } = req.body;
+  const {filter,page ,limit } = req.query;
+  console.log(req.user)
+  const requestedUser = req.user.userName;
   const pageLimit = parseInt(limit) || 10;
   const pageNumber = parseInt(page) || 1;
   if (!filter) {
@@ -162,18 +164,23 @@ const filterUser = asyncHandler(async (req, res,next) => {
   const users = await User.aggregate([
     {
       $match: {
-        $or: [
-          { userName: { $regex: filter } },
-          { lastName: { $regex: filter } },
-        ],
+        $and: [
+          {
+            $or: [
+              { userName: { $regex: filter, $options: "i" } }, // Case-insensitive search
+              { lastName: { $regex: filter, $options: "i" } },
+            ],
+          },
+          { userName: { $ne: requestedUser } } 
+        ]
       },
     },
+   
     {
       $skip:  (pageNumber - 1 )*pageLimit
     },{
       $limit:pageLimit
-    }
-  ]);
+    }, ]);
  
   if (users.length === 0) {
     return res
