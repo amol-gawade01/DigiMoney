@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState ={
-    theme:"light"
+    theme:JSON.parse(localStorage.getItem("theme"))||"light"
 }
 
 const themeSlice = createSlice({
@@ -9,7 +9,8 @@ const themeSlice = createSlice({
     initialState,
     reducers:{
         changeTheme:(state,action) => {
-            state.theme = action.payload ? "dark":"light"
+            state.theme = action.payload ? "dark":"light";
+            localStorage.setItem("theme", JSON.stringify(state.theme))
         }
     }
 })
